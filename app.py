@@ -9,8 +9,8 @@ fake_customer = {
     "last_name": "Rossi",
     "birth_date": "05/15/1980",
     "address": "Via Example 123, Milan",
-    "email": "mario.rossi@email.com",
-    "phone": "+39 347 1234567",
+    "email": "mario.rossi@example.com",
+    "phone": "+393666742138",
     "current_account": "IT60X0542811101000000123456",
     "balance": "€ 5,432.78",
     "recent_transactions": [
@@ -280,7 +280,7 @@ async def home(
 ):
     ts_str = format_timestamp(timestamp)
 
-    if id == "12345":
+    if id == "123456789":
         # Customer profile view
         full_name = f"{fake_customer['first_name']} {fake_customer['last_name']}"
         balance = fake_customer["balance"]
