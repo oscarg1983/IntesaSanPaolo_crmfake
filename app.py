@@ -5,18 +5,18 @@ from datetime import datetime
 app = FastAPI()
 
 fake_customer = {
-    "nome": "Mario",
-    "cognome": "Rossi",
-    "data_nascita": "15/05/1980",
-    "indirizzo": "Via Example 123, Milano",
+    "first_name": "Mario",
+    "last_name": "Rossi",
+    "birth_date": "05/15/1980",
+    "address": "Via Example 123, Milan",
     "email": "mario.rossi@email.com",
-    "telefono": "+39 347 1234567",
-    "conto_corrente": "IT60X0542811101000000123456",
-    "saldo": "€ 5.432,78",
-    "ultime_transazioni": [
-        {"data": "2026-03-18", "descrizione": "Stipendio", "importo": "+ € 2.500,00"},
-        {"data": "2026-03-15", "descrizione": "Supermercato", "importo": "- € 45,20"},
-        {"data": "2026-03-10", "descrizione": "POS Ristorante", "importo": "- € 67,90"},
+    "phone": "+39 347 1234567",
+    "current_account": "IT60X0542811101000000123456",
+    "balance": "€ 5,432.78",
+    "recent_transactions": [
+        {"date": "2026-03-18", "description": "Salary", "amount": "+ € 2,500.00"},
+        {"date": "2026-03-15", "description": "Supermarket", "amount": "- € 45.20"},
+        {"date": "2026-03-10", "description": "POS Restaurant", "amount": "- € 67.90"},
     ]
 }
 
@@ -267,32 +267,31 @@ BASE_CSS = """
 
 def format_timestamp(ts: int | None) -> str:
     if not ts:
-        return "Non fornito"
+        return "Not provided"
     try:
-        return datetime.fromtimestamp(ts).strftime("%d/%m/%Y %H:%M:%S")
+        return datetime.fromtimestamp(ts).strftime("%m/%d/%Y %H:%M:%S")
     except Exception:
-        return "Non valido"
-
+        return "Invalid"
 
 @app.get("/", response_class=HTMLResponse)
 async def home(
-    id: str | None = Query(None, description="ID cliente"),
-    timestamp: int | None = Query(None, description="Timestamp Unix")
+    id: str | None = Query(None, description="Customer ID"),
+    timestamp: int | None = Query(None, description="Unix timestamp")
 ):
     ts_str = format_timestamp(timestamp)
 
     if id == "12345":
-        # Vista anagrafica cliente
-        full_name = f"{fake_customer['nome']} {fake_customer['cognome']}"
-        saldo = fake_customer["saldo"]
+        # Customer profile view
+        full_name = f"{fake_customer['first_name']} {fake_customer['last_name']}"
+        balance = fake_customer["balance"]
         tx_rows = ""
-        for tx in fake_customer["ultime_transazioni"]:
-            amount_cls = "amount-pos" if "+" in tx["importo"] else "amount-neg"
+        for tx in fake_customer["recent_transactions"]:
+            amount_cls = "amount-pos" if "+" in tx["amount"] else "amount-neg"
             tx_rows += f"""
                 <tr>
-                    <td>{tx['data']}</td>
-                    <td>{tx['descrizione']}</td>
-                    <td class="{amount_cls}">{tx['importo']}</td>
+                    <td>{tx['date']}</td>
+                    <td>{tx['description']}</td>
+                    <td class="{amount_cls}">{tx['amount']}</td>
                 </tr>
             """
 
@@ -301,22 +300,22 @@ async def home(
             <section class="card">
                 <div class="card-header">
                     <div>
-                        <div class="card-title">Profilo cliente</div>
-                        <div class="card-meta">Vista sintetica anagrafica e rapporti</div>
+                        <div class="card-title">Customer Profile</div>
+                        <div class="card-meta">Customer details and account summary</div>
                     </div>
                     <div class="pill">
                         <span class="pill-dot"></span>
-                        Cliente identificato
+                        Customer identified
                     </div>
                 </div>
 
                 <div class="details-grid">
                     <div>
-                        <div class="label">Intestatario</div>
+                        <div class="label">Account holder</div>
                         <div class="value">{full_name}</div>
                     </div>
                     <div>
-                        <div class="label">ID cliente</div>
+                        <div class="label">Customer ID</div>
                         <div class="value">
                             <span class="badge-id">
                                 ID <span>{id}</span>
@@ -324,43 +323,43 @@ async def home(
                         </div>
                     </div>
                     <div>
-                        <div class="label">Data di nascita</div>
-                        <div class="value">{fake_customer['data_nascita']}</div>
+                        <div class="label">Birth date</div>
+                        <div class="value">{fake_customer['birth_date']}</div>
                     </div>
                     <div>
-                        <div class="label">Indirizzo</div>
-                        <div class="value">{fake_customer['indirizzo']}</div>
+                        <div class="label">Address</div>
+                        <div class="value">{fake_customer['address']}</div>
                     </div>
                     <div>
                         <div class="label">Email</div>
                         <div class="value">{fake_customer['email']}</div>
                     </div>
                     <div>
-                        <div class="label">Telefono</div>
-                        <div class="value">{fake_customer['telefono']}</div>
+                        <div class="label">Phone</div>
+                        <div class="value">{fake_customer['phone']}</div>
                     </div>
                     <div>
-                        <div class="label">Conto corrente</div>
-                        <div class="value">{fake_customer['conto_corrente']}</div>
+                        <div class="label">Current account</div>
+                        <div class="value">{fake_customer['current_account']}</div>
                     </div>
                     <div>
-                        <div class="label">Saldo disponibile</div>
-                        <div class="value">{saldo}</div>
+                        <div class="label">Available balance</div>
+                        <div class="value">{balance}</div>
                     </div>
                     <div>
-                        <div class="label">Timestamp richiesta</div>
+                        <div class="label">Request timestamp</div>
                         <div class="value">{ts_str}</div>
                     </div>
                 </div>
 
                 <div style="margin-top:16px;">
-                    <div class="label">Ultime operazioni</div>
+                    <div class="label">Recent transactions</div>
                     <table class="tx">
                         <thead>
                             <tr>
-                                <th>Data</th>
-                                <th>Descrizione</th>
-                                <th>Importo</th>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Amount</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -372,88 +371,87 @@ async def home(
 
             <aside class="card">
                 <div class="sidebar-section">
-                    <div class="card-title" style="font-size:14px;">Azioni rapide</div>
-                    <div class="hint">Seleziona una voce per simulare le operazioni tipiche di sportello.</div>
+                    <div class="card-title" style="font-size:14px;">Quick actions</div>
+                    <div class="hint">Select an option to simulate typical banking operations.</div>
                 </div>
                 <div class="sidebar-section" style="font-size:13px;">
                     <ul style="list-style:none; display:flex; flex-direction:column; gap:6px; margin-top:6px;">
-                        <li>• Simula bonifico SEPA</li>
-                        <li>• Visualizza esposizione carte</li>
-                        <li>• Verifica recapiti cliente</li>
-                        <li>• Apri posizione investimenti</li>
+                        <li>• Simulate SEPA transfer</li>
+                        <li>• View credit card exposure</li>
+                        <li>• Verify customer contacts</li>
+                        <li>• Open investment position</li>
                     </ul>
                 </div>
                 <div class="sidebar-section">
-                    <div class="label">Parametro di ricerca</div>
+                    <div class="label">Search parameter</div>
                     <div class="value">id=12345 · {ts_str}</div>
-                    <p class="hint">Modifica l'ID nella URL per vedere la vista “Ricerca clienti”.</p>
+                    <p class="hint">Change the ID in the URL to see the "Customer search" view.</p>
                 </div>
             </aside>
         </div>
         """
-        page_title = "Area clienti · Banca Demo"
-        hero_title = "Profilo cliente"
-        hero_sub = "Stai visualizzando i dati sintetici del cliente identificato."
+        page_title = "Customers · Demo Bank"
+        hero_title = "Customer Profile"
+        hero_sub = "You are viewing the synthetic data of the identified customer."
 
     else:
-        # Vista customSearch
+        # Customer search view
         display_id = id or "—"
         main_html = f"""
         <div class="main-inner">
             <section class="card">
                 <div class="card-header">
                     <div>
-                        <div class="card-title">Ricerca clienti</div>
-                        <div class="card-meta">Inserisci un identificativo per simulare la ricerca anagrafica</div>
+                        <div class="card-title">Customer Search</div>
+                        <div class="card-meta">Enter an identifier to simulate customer lookup</div>
                     </div>
                     <div class="pill" style="background:rgba(1,102,155,0.06);border-color:rgba(1,102,155,0.28);color:var(--blue);">
                         <span class="pill-dot" style="background:var(--blue);"></span>
-                        Nessun cliente selezionato
+                        No customer selected
                     </div>
                 </div>
 
                 <div style="max-width:420px; margin-top:4px;">
-                    <div class="label">ID cliente attuale</div>
+                    <div class="label">Current customer ID</div>
                     <div class="value" style="margin-bottom:8px;">{display_id}</div>
                     <form onsubmit="event.preventDefault(); var v=document.getElementById('id-input').value; var ts={timestamp or ''}; var qs='?id='+encodeURIComponent(v); if(ts){{qs+='&timestamp='+ts;}} window.location.search = qs;">
-                        <input id="id-input" class="search-input" placeholder="Inserisci un ID cliente (es. 12345)" />
+                        <input id="id-input" class="search-input" placeholder="Enter customer ID (e.g. 12345)" />
                     </form>
-                    <p class="hint">Suggerimento: prova con <strong>12345</strong> per caricare l'anagrafica di Mario Rossi.</p>
+                    <p class="hint">Tip: try <strong>12345</strong> to load Mario Rossi's profile.</p>
                 </div>
 
                 <div style="margin-top:18px;">
-                    <div class="label">Esito simulato</div>
+                    <div class="label">Simulated result</div>
                     <p class="value" style="margin-top:4px;">
-                        Nessun record trovato per l'ID inserito. Questa vista rappresenta una
-                        schermata di ricerca anagrafica “tipo CRM” da agganciare a sistemi reali.
+                        No records found for the entered ID. This view represents a typical CRM customer search screen to connect to real systems.
                     </p>
                 </div>
             </section>
 
             <aside class="card">
                 <div class="sidebar-section">
-                    <div class="card-title" style="font-size:14px;">Stato sessione</div>
+                    <div class="card-title" style="font-size:14px;">Session status</div>
                     <div class="value" style="margin-top:4px;">
                         <span class="status-pill">Timestamp: {ts_str}</span>
                     </div>
-                    <p class="hint">Se non passi alcun timestamp, viene mostrato “Non fornito”.</p>
+                    <p class="hint">If no timestamp is passed, it shows "Not provided".</p>
                 </div>
                 <div class="sidebar-section">
-                    <div class="card-title" style="font-size:14px;">Parametri URL</div>
+                    <div class="card-title" style="font-size:14px;">URL parameters</div>
                     <p class="hint">
-                        Esempio: <code>?id=12345&amp;timestamp=1742478300</code><br>
-                        Puoi usare questi parametri da Genesys, da un CRM o da qualsiasi altro sistema.
+                        Example: <code>?id=12345&amp;timestamp=1742478300</code><br>
+                        You can use these parameters from Genesys, CRM, or any other system.
                     </p>
                 </div>
             </aside>
         </div>
         """
-        page_title = "Ricerca clienti · Banca Demo"
-        hero_title = "Area clienti online"
-        hero_sub = "Simulazione di interfaccia bancaria per ricerca e visualizzazione profilo."
+        page_title = "Customer Search · Demo Bank"
+        hero_title = "Online Banking Area"
+        hero_sub = "Banking interface simulation for customer search and profile display."
 
     html = f"""
-    <html lang="it">
+    <html lang="en">
       <head>
         <meta charset="utf-8" />
         <title>{page_title}</title>
@@ -466,12 +464,12 @@ async def home(
             <div class="topbar">
               <div class="brand">
                 <div class="brand-mark">BD</div>
-                <div class="brand-text">BANCA DEMO</div>
+                <div class="brand-text">DEMO BANK</div>
               </div>
               <nav class="nav">
-                <a href="/" class="active">Clienti</a>
-                <a href="#">Prodotti</a>
-                <a href="#">Supporto</a>
+                <a href="/" class="active">Customers</a>
+                <a href="#">Products</a>
+                <a href="#">Support</a>
               </nav>
             </div>
             <div class="hero-bar">
@@ -488,8 +486,8 @@ async def home(
 
           <footer>
             <div class="footer-inner">
-              <div>Interfaccia demo ispirata a portali bancari italiani.</div>
-              <div>Ambiente di test · Non utilizzare dati reali di clienti.</div>
+              <div>Demo interface inspired by Italian banking portals.</div>
+              <div>Test environment · Do not use real customer data.</div>
             </div>
           </footer>
         </div>
