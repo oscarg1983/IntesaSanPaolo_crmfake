@@ -280,6 +280,7 @@ async def home(
 ):
     ts_str = format_timestamp(timestamp)
 
+    # MODIFICA: Correggere il controllo per mostrare il profilo del cliente Mario Rossi
     if id == "123456789":
         # Customer profile view
         full_name = f"{fake_customer['first_name']} {fake_customer['last_name']}"
@@ -384,8 +385,8 @@ async def home(
                 </div>
                 <div class="sidebar-section">
                     <div class="label">Search parameter</div>
-                    <div class="value">id=12345 · {ts_str}</div>
-                    <p class="hint">Change the ID in the URL to see the "Customer search" view.</p>
+                    <div class="value">id={id} · {ts_str}</div>
+                    <p class="hint">Customer Mario Rossi profile loaded successfully.</p>
                 </div>
             </aside>
         </div>
@@ -415,15 +416,15 @@ async def home(
                     <div class="label">Current customer ID</div>
                     <div class="value" style="margin-bottom:8px;">{display_id}</div>
                     <form onsubmit="event.preventDefault(); var v=document.getElementById('id-input').value; var ts={timestamp or ''}; var qs='?id='+encodeURIComponent(v); if(ts){{qs+='&timestamp='+ts;}} window.location.search = qs;">
-                        <input id="id-input" class="search-input" placeholder="Enter customer ID (e.g. 12345)" />
+                        <input id="id-input" class="search-input" placeholder="Enter customer ID (e.g. 123456789)" value="{id or ''}" />
                     </form>
-                    <p class="hint">Tip: try <strong>12345</strong> to load Mario Rossi's profile.</p>
+                    <p class="hint">Tip: try <strong>123456789</strong> to load Mario Rossi's profile.</p>
                 </div>
 
                 <div style="margin-top:18px;">
                     <div class="label">Simulated result</div>
                     <p class="value" style="margin-top:4px;">
-                        No records found for the entered ID. This view represents a typical CRM customer search screen to connect to real systems.
+                        No records found for ID <strong>{display_id}</strong>. This view represents a typical CRM customer search screen.
                     </p>
                 </div>
             </section>
@@ -439,7 +440,7 @@ async def home(
                 <div class="sidebar-section">
                     <div class="card-title" style="font-size:14px;">URL parameters</div>
                     <p class="hint">
-                        Example: <code>?id=12345&amp;timestamp=1742478300</code><br>
+                        Example: <code>?id=123456789&amp;timestamp=1742478300</code><br>
                         You can use these parameters from Genesys, CRM, or any other system.
                     </p>
                 </div>
